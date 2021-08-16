@@ -10,6 +10,8 @@
   };
 
   function login() {
+    console.log("ere?");
+
     http
       .post<IUser>("/user/authenticate", form)
       .then(({ data }) => {

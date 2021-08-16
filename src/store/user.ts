@@ -1,4 +1,5 @@
 import { writable } from "svelte/store";
+import collectionsStore from "./collection";
 
 export interface IUser {
   id: number;
@@ -21,6 +22,7 @@ function createUserStore() {
   function logout() {
     localStorage.removeItem("user");
     set(null);
+    collectionsStore.clear();
   }
 
   return {
