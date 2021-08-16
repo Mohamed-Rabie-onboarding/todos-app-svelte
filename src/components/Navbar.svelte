@@ -1,5 +1,6 @@
 <script lang="ts">
   import active from "svelte-spa-router/active";
+  import userStore from "../store/user";
 </script>
 
 <nav class="navbar container">
@@ -12,6 +13,7 @@
     <a href="/#/" use:active={{ path: "/", className: "active" }} class="active"> Todos </a>
     <a href="/#/login" use:active={{ path: "/login", className: "active" }} > Login </a>
     <a href="/#/register" use:active={{ path: "/register", className: "active" }}> Register</a>
+    <a href="/#/login" on:click={userStore.logout}> Logout</a>
   </div>
 </nav>
 
