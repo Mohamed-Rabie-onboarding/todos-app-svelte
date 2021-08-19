@@ -5,6 +5,7 @@
   import collectionStore from "../store/collection";
   import type { ICollection } from "../store/collection";
   import Collection from "../components/Collection.svelte";
+  import Editable from "../components/Editable.svelte";
 
   let loading = false;
 
@@ -24,6 +25,21 @@
         });
     }
   });
+
+  let title = "";
+  const createNewCollection = (ev: CustomEvent) => {
+    title = "";
+    const { detail: { value } } = ev; // prettier-ignore
+
+    http
+      .post<ICollection>("/collection", {
+        title: value,
+      })
+      .then(({ data }) => {
+        collectionStore.addCollection(data);
+      })
+      .catch(console.error);
+  };
 </script>
 
 <section class="board">
@@ -31,7 +47,9 @@
     {#each $collectionStore as collection (collection.id)}
       <Collection {collection} />
     {/each}
-    <div class="collection">here goes add collection</div>
+    <Editable bind:label={title} on:updated={createNewCollection}>
+      <div class="new-collection">Add new collection</div>
+    </Editable>
   </section>
 </section>
 
@@ -53,6 +71,14 @@
       overflow-y: hidden;
       overflow-x: auto;
       padding-bottom: 2rem;
+    }
+
+    .new-collection {
+      --w: 350px;
+      min-width: var(--w);
+      max-width: var(--w);
+      background-color: rgba(white, 0.3);
+      padding: 1.5rem;
     }
   }
 </style>

@@ -4,7 +4,7 @@
   const dispatch = createEventDispatcher();
   export let label: string;
   let editing: boolean = false;
-  let editedVal: string = label;
+  $: editedVal = label;
 
   const toggleEdit = () => (editing = !editing);
   const updateOrSkip = () => {

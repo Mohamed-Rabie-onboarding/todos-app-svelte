@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { ITodo } from "../store/collection";
+  import type { ITodo, ITodoItem } from "../store/collection";
   import Editable from "./Editable.svelte";
   import http from "../configs/http";
   import collectionStore from "../store/collection";
@@ -65,6 +65,21 @@
       })
       .catch(console.error);
   };
+
+  let body: string = "";
+  const addTodoItem = (ev: CustomEvent) => {
+    body = "";
+    const { detail: { value } } = ev; // prettier-ignore
+
+    http
+      .post<ITodoItem>(`/todo-item/${todo.id}`, {
+        body: value,
+      })
+      .then(({ data }) => {
+        collectionStore.addTodoItem(collectionId, todo.id, data);
+      })
+      .catch(console.error);
+  };
 </script>
 
 <Removable on:click={removeTodo}>
@@ -89,6 +104,9 @@
           </div>
         </Removable>
       {/each}
+      <Editable bind:label={body} on:updated={addTodoItem}>
+        <div>Add new todo item.</div>
+      </Editable>
     </div>
   </div>
 </Removable>

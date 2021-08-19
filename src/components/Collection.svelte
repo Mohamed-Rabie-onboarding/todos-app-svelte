@@ -1,6 +1,6 @@
 <script lang="ts">
   import Editable from "./Editable.svelte";
-  import type { ICollection } from "../store/collection";
+  import type { ICollection, ITodo } from "../store/collection";
   import Todo from "./Todo.svelte";
   import http from "../configs/http";
   import collectionStore from "../store/collection";
@@ -33,6 +33,20 @@
       })
       .catch(console.error);
   };
+
+  let description: string = "";
+  const addTodo = (ev: CustomEvent) => {
+    description = "";
+    const { detail: { value } } = ev; //prettier-ignore
+    http
+      .post<ITodo>(`/todo/${collection.id}`, {
+        description: value,
+      })
+      .then(({ data }) => {
+        collectionStore.addTodo(collection.id, data);
+      })
+      .catch(console.error);
+  };
 </script>
 
 <Removable on:click={removeCollection}>
@@ -46,6 +60,9 @@
       {#each collection.todos as todo (todo.id)}
         <Todo {todo} collectionId={collection.id} />
       {/each}
+      <Editable bind:label={description} on:updated={addTodo}>
+        <div class="add-todo">Add new Todo.</div>
+      </Editable>
     </div>
   </div>
 </Removable>
