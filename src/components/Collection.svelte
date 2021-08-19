@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Editable from "./Editable.svelte";
   import type { ICollection } from "../store/collection";
   import Todo from "./Todo.svelte";
 
@@ -7,6 +8,7 @@
 
 <div class="collection">
   <header class="collection__header">
+    <Editable label={collection.title} />
     <h3>{collection.title}</h3>
   </header>
   <div class="collection__container spacer">
