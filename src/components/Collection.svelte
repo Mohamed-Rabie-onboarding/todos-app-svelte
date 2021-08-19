@@ -4,6 +4,7 @@
   import Todo from "./Todo.svelte";
   import http from "../configs/http";
   import collectionStore from "../store/collection";
+  import Removable from "./Removable.svelte";
 
   export let collection: ICollection;
 
@@ -23,20 +24,31 @@
       })
       .catch(console.error);
   };
+
+  const removeCollection = () => {
+    http
+      .delete(`/collection/${collection.id}`)
+      .then(() => {
+        collectionStore.removeCollection(collection.id);
+      })
+      .catch(console.error);
+  };
 </script>
 
-<div class="collection">
-  <header class="collection__header">
-    <Editable label={collection.title} on:updated={updateCollectionTitle}>
-      <h3>{collection.title}</h3>
-    </Editable>
-  </header>
-  <div class="collection__container spacer">
-    {#each collection.todos as todo (todo.id)}
-      <Todo {todo} collectionId={collection.id} />
-    {/each}
+<Removable on:click={removeCollection}>
+  <div class="collection">
+    <header class="collection__header">
+      <Editable label={collection.title} on:updated={updateCollectionTitle}>
+        <h3>{collection.title}</h3>
+      </Editable>
+    </header>
+    <div class="collection__container spacer">
+      {#each collection.todos as todo (todo.id)}
+        <Todo {todo} collectionId={collection.id} />
+      {/each}
+    </div>
   </div>
-</div>
+</Removable>
 
 <style lang="scss">
   .collection {

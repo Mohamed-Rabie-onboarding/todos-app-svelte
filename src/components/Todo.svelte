@@ -3,6 +3,7 @@
   import Editable from "./Editable.svelte";
   import http from "../configs/http";
   import collectionStore from "../store/collection";
+  import Removable from "./Removable.svelte";
 
   export let collectionId: number;
   export let todo: ITodo;
@@ -46,29 +47,51 @@
       })
       .catch(console.error);
   };
+
+  const removeTodo = () => {
+    http
+      .delete(`/todo/${todo.id}`)
+      .then(() => {
+        collectionStore.removeTodo(collectionId, todo.id);
+      })
+      .catch(console.error);
+  };
+
+  const removeTodoItem = (id: number) => () => {
+    http
+      .delete(`/todo-item/${id}`)
+      .then(() => {
+        collectionStore.removeTodoItem(collectionId, todo.id, id);
+      })
+      .catch(console.error);
+  };
 </script>
 
-<div class="todo">
-  <Editable label={todo.description} on:updated={updateTodoDescription}>
-    <p class="todo__description">{todo.description}</p>
-  </Editable>
-  <div class="items">
-    {#each todo.items as item (item.id)}
-      <div class="item">
-        <input
-          type="checkbox"
-          checked={item.done}
-          on:change={updateItemDone(item.id)}
-        />
-        <Editable label={item.body} on:updated={updateItemBody(item.id)}>
-          <span>
-            {item.body}
-          </span>
-        </Editable>
-      </div>
-    {/each}
+<Removable on:click={removeTodo}>
+  <div class="todo">
+    <Editable label={todo.description} on:updated={updateTodoDescription}>
+      <p class="todo__description">{todo.description}</p>
+    </Editable>
+    <div class="items">
+      {#each todo.items as item (item.id)}
+        <Removable top={0} on:click={removeTodoItem(item.id)}>
+          <div class="item">
+            <input
+              type="checkbox"
+              checked={item.done}
+              on:change={updateItemDone(item.id)}
+            />
+            <Editable label={item.body} on:updated={updateItemBody(item.id)}>
+              <span>
+                {item.body}
+              </span>
+            </Editable>
+          </div>
+        </Removable>
+      {/each}
+    </div>
   </div>
-</div>
+</Removable>
 
 <style lang="scss">
   .todo {
@@ -80,7 +103,7 @@
 
   .item {
     display: flex;
-    margin: 1rem 0;
+    margin: 2rem 0 1rem;
     align-items: center;
 
     input {

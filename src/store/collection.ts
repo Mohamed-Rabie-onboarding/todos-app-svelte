@@ -1,5 +1,5 @@
 import { writable } from "svelte/store";
-import { patch, updateItem } from "@ngxs/store/operators";
+import { patch, updateItem, removeItem } from "@ngxs/store/operators";
 
 export interface ITodoItem {
   id: number;
@@ -109,6 +109,37 @@ function createCollectionsStore() {
                     done,
                   })
                 ),
+              })
+            ),
+          })
+        )
+      );
+    },
+
+    removeCollection: (id: number) => {
+      return update(removeItem((c) => c.id === id));
+    },
+
+    removeTodo: (collectionId: number, id: number) => {
+      return update(
+        updateItem(
+          (c) => c.id === collectionId,
+          patch({
+            todos: removeItem<ITodo>((t) => t.id === id),
+          })
+        )
+      );
+    },
+
+    removeTodoItem: (collectionId: number, todoId: number, id: number) => {
+      return update(
+        updateItem(
+          (c) => c.id === collectionId,
+          patch({
+            todos: updateItem<ITodo>(
+              (t) => t.id === todoId,
+              patch({
+                items: removeItem<ITodoItem>((i) => i.id === id),
               })
             ),
           })
