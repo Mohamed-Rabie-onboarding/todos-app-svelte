@@ -1,4 +1,5 @@
 import { writable } from "svelte/store";
+import { patch, updateItem } from "@ngxs/store/operators";
 
 export interface ITodoItem {
   id: number;
@@ -32,6 +33,88 @@ function createCollectionsStore() {
     /**
      * @TODO add updates here
      */
+    updateCollectionTitle: (id: number, title: string) => {
+      return update(
+        updateItem(
+          (c) => c.id === id,
+          patch({
+            title,
+          })
+        )
+      );
+    },
+
+    updateTodoDescription: (
+      collectionId: number,
+      id: number,
+      description: string
+    ) => {
+      return update(
+        updateItem(
+          (c) => c.id === collectionId,
+          patch({
+            todos: updateItem<ITodo>(
+              (t) => t.id === id,
+              patch({
+                description,
+              })
+            ),
+          })
+        )
+      );
+    },
+
+    updateItemBody: (
+      collectionId: number,
+      todoId: number,
+      id: number,
+      body: string
+    ) => {
+      return update(
+        updateItem(
+          (c) => c.id === collectionId,
+          patch({
+            todos: updateItem<ITodo>(
+              (t) => t.id === todoId,
+              patch({
+                items: updateItem<ITodoItem>(
+                  (i) => i.id === id,
+                  patch({
+                    body,
+                  })
+                ),
+              })
+            ),
+          })
+        )
+      );
+    },
+
+    updateItemDone: (
+      collectionId: number,
+      todoId: number,
+      id: number,
+      done: boolean
+    ) => {
+      return update(
+        updateItem(
+          (c) => c.id === collectionId,
+          patch({
+            todos: updateItem<ITodo>(
+              (t) => t.id === todoId,
+              patch({
+                items: updateItem<ITodoItem>(
+                  (i) => i.id === id,
+                  patch({
+                    done,
+                  })
+                ),
+              })
+            ),
+          })
+        )
+      );
+    },
   };
 }
 

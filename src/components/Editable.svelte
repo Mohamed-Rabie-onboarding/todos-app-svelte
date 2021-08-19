@@ -1,24 +1,29 @@
 <script lang="ts">
-  export let label: string;
+  import { createEventDispatcher } from "svelte";
 
+  const dispatch = createEventDispatcher();
+  export let label: string;
   let editing: boolean = false;
   let editedVal: string = label;
 
   const toggleEdit = () => (editing = !editing);
+  const updateOrSkip = () => {
+    toggleEdit();
+    if (label === editedVal || editedVal === "") {
+      return (editedVal = label);
+    }
+
+    label = editedVal;
+    dispatch("updated", { value: label });
+  };
 </script>
 
 {#if !editing}
-  <p on:click={toggleEdit}>
-    {label}
-  </p>
+  <div on:click={toggleEdit}>
+    <slot />
+  </div>
 {/if}
 
 {#if editing}
-  <input type="text" on:blur={toggleEdit} bind:value={editedVal} />
+  <input type="text" on:blur={updateOrSkip} autofocus bind:value={editedVal} />
 {/if}
-<br />
-label: {label}
-<br />
-editedVal: {editedVal}
-<br />
-<hr />
